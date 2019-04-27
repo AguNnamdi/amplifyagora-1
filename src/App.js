@@ -1,12 +1,34 @@
-import React from "react";
-import "./App.css";
+import React from 'react'
+import { Authenticator, AmplifyTheme } from 'aws-amplify-react'
+import useFetchUserData from './components/helpers/useFetchUserData'
+import './App.css'
 
-class App extends React.Component {
-  state = {};
+function App() {
+  const {
+    data: { user },
+  } = useFetchUserData()
 
-  render() {
-    return <div>App</div>;
-  }
+  return !user ? <Authenticator theme={theme} /> : <div>App</div>
 }
 
-export default App;
+const theme = {
+  ...AmplifyTheme,
+  navBar: {
+    ...AmplifyTheme.navBar,
+    backgroundColor: '#ffc0cb',
+  },
+  button: {
+    ...AmplifyTheme.button,
+    backgroundColor: 'var(--amazonOrange)',
+  },
+  sectionBody: {
+    ...AmplifyTheme.sectionBody,
+    padding: '5px',
+  },
+  sectionHeader: {
+    ...AmplifyTheme.sectionHeader,
+    backgroundColor: 'var(--squidInk)',
+  },
+}
+
+export default App
