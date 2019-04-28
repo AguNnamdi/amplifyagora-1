@@ -9,11 +9,21 @@ import {
 } from 'element-react'
 import { API, graphqlOperation } from 'aws-amplify'
 import { createMarket } from '../graphql/mutations'
+import { UserContext } from '../App'
 
 const NewMarket = () => {
   const { user } = useContext(UserContext)
   const [marketName, setMarketName] = useState('')
   const [addMarketDialog, setAddMarketDialog] = useState(false)
+  const tags = [
+    'Arts',
+    'Technology',
+    'Web Development',
+    'Crafts',
+    'Entertainment',
+  ]
+  const [selectedTags, setSelectedTags] = useState([])
+  const [options, setOptions] = useState([])
 
   const handleAddMarket = async event => {
     try {
@@ -21,12 +31,15 @@ const NewMarket = () => {
       setAddMarketDialog(false)
       const input = {
         name: marketName,
+        tags: selectedTags,
+        owner: user.username,
       }
       const result = await API.graphql(
         graphqlOperation(createMarket, { input })
       )
       console.info(`Created market: id ${result.data.createMarket.id}`)
       setMarketName('')
+      setSelectedTags([])
     } catch (error) {
       console.error('Error adding new market ', error)
       Notification.error({
@@ -35,6 +48,14 @@ const NewMarket = () => {
       })
     }
   }
+
+  const handleFilteredTags = query => {
+    const options = tags
+      .map(tag => ({ value: tag, label: tag }))
+      .filter(tag => tag.label.toLowerCase().includes(query.toLowerCase()))
+    setOptions(options)
+  }
+
   return (
     <>
       <div className="market-header">
@@ -68,6 +89,25 @@ const NewMarket = () => {
                 required
               />
             </Form.Item>
+            <Form.Item label="Add Tags">
+              <Select
+                multiple={true}
+                filterable={true}
+                placeholder="Market Tags"
+                value={selectedTags}
+                onChange={selectedTags => setSelectedTags(selectedTags)}
+                remoteMethod={handleFilteredTags}
+                remote={true}
+              >
+                {options.map(option => (
+                  <Select.Option
+                    key={option.value}
+                    label={option.label}
+                    value={option.value}
+                  />
+                ))}
+              </Select>
+            </Form.Item>
           </Form>
         </Dialog.Body>
         <Dialog.Footer>
@@ -77,6 +117,7 @@ const NewMarket = () => {
             nativeType="submit"
             disabled={!marketName}
             onClick={event => handleAddMarket(event)}
+          >
             Add
           </Button>
         </Dialog.Footer>
