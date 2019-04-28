@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import {
   Form,
   Button,
@@ -11,6 +11,7 @@ import { API, graphqlOperation } from 'aws-amplify'
 import { createMarket } from '../graphql/mutations'
 
 const NewMarket = () => {
+  const { user } = useContext(UserContext)
   const [marketName, setMarketName] = useState('')
   const [addMarketDialog, setAddMarketDialog] = useState(false)
 
@@ -21,10 +22,13 @@ const NewMarket = () => {
       const input = {
         name: marketName,
       }
-      const result = await API.graphqlOperation(createMarket, { input })
+      const result = await API.graphql(
+        graphqlOperation(createMarket, { input })
+      )
       console.info(`Created market: id ${result.data.createMarket.id}`)
       setMarketName('')
     } catch (error) {
+      console.error('Error adding new market ', error)
       Notification.error({
         title: 'Error',
         message: `{error.message || "Error adding market"}`,
@@ -52,7 +56,7 @@ const NewMarket = () => {
         customClass="dialog"
       >
         <Dialog.Body>
-          <Form labelPosition="top" onSubmit={handleAddMarket}>
+          <Form labelPosition="top">
             <Form.Item label="Add Market Name">
               <Input
                 placeholder="Market Name"
@@ -68,7 +72,11 @@ const NewMarket = () => {
         </Dialog.Body>
         <Dialog.Footer>
           <Button onClick={() => setAddMarketDialog(false)}>Cancel</Button>
-          <Button type="primary" type="submit" disabled={!marketName}>
+          <Button
+            type="primary"
+            nativeType="submit"
+            disabled={!marketName}
+            onClick={event => handleAddMarket(event)}
             Add
           </Button>
         </Dialog.Footer>

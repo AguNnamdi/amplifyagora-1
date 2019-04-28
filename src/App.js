@@ -8,6 +8,8 @@ import Navbar from './components/Navbar'
 import useFetchUserData from './components/helpers/useFetchUserData'
 import './App.css'
 
+export const UserContext = React.createContext()
+
 const App = () => {
   const {
     data: { user },
@@ -17,23 +19,25 @@ const App = () => {
   return !user ? (
     <Authenticator theme={theme} />
   ) : (
-    <Router>
-      <>
-        {/* Navigation*/}
-        <Navbar user={user} handleSignout={handleSignout} />
-        {/* Routes */}
-        <div className="app-container">
-          <Route exact path="/" component={HomePage} />
-          <Route path="/profile" component={ProfilePage} />
-          <Route
-            path="/markets/:marketId"
-            component={({ match }) => (
-              <MarketPage marketId={match.params.marketId} />
-            )}
-          />
-        </div>
-      </>
-    </Router>
+    <UserContext.Provider value={{ user }}>
+      <Router>
+        <>
+          {/* Navigation*/}
+          <Navbar user={user} handleSignout={handleSignout} />
+          {/* Routes */}
+          <div className="app-container">
+            <Route exact path="/" component={HomePage} />
+            <Route path="/profile" component={ProfilePage} />
+            <Route
+              path="/markets/:marketId"
+              component={({ match }) => (
+                <MarketPage marketId={match.params.marketId} />
+              )}
+            />
+          </div>
+        </>
+      </Router>
+    </UserContext.Provider>
   )
 }
 
