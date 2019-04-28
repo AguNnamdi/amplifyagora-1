@@ -39,7 +39,7 @@ const useFetchUserData = () => {
         break
       case 'signout':
         console.log('signed out')
-        setData({ user: null })
+        setIsSignedIn(false)
         break
       default:
         return
