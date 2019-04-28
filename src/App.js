@@ -4,12 +4,14 @@ import { BrowserRouter as Router, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import ProfilePage from './pages/ProfilePage'
 import MarketPage from './pages/MarketPage'
+import Navbar from './components/Navbar'
 import useFetchUserData from './components/helpers/useFetchUserData'
 import './App.css'
 
 function App() {
   const {
     data: { user },
+    handleSignout,
   } = useFetchUserData()
 
   return !user ? (
@@ -17,7 +19,9 @@ function App() {
   ) : (
     <Router>
       <>
-        {/* Router */}
+        {/* Navigation*/}
+        <Navbar user={user} handleSignout={handleSignout} />
+        {/* Routes */}
         <div className="app-container">
           <Route exact path="/" component={HomePage} />
           <Route path="/profile" component={ProfilePage} />

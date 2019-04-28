@@ -46,7 +46,16 @@ const useFetchUserData = () => {
     }
   }
 
-  return { data }
+  const handleSignout = async () => {
+    try {
+      await Auth.signOut()
+      setData({ user: null })
+    } catch (error) {
+      console.error('Error signing out user ', error)
+    }
+  }
+
+  return { data, handleSignout }
 }
 
 export default useFetchUserData
