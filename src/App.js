@@ -8,7 +8,7 @@ import Navbar from './components/Navbar'
 import useFetchUserData from './components/helpers/useFetchUserData'
 import './App.css'
 
-function App() {
+const App = () => {
   const {
     data: { user },
     handleSignout,
