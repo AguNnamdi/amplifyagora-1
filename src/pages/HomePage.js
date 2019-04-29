@@ -1,11 +1,33 @@
-import React from 'react'
+import React, { useState } from 'react'
 import NewMarket from '../components/NewMarket'
 import MarketList from '../components/MarketList'
 
-function HomePage() {
+const HomePage = () => {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [searchResults, setSearchResults] = useState([])
+  const [isSearching, setIsSearching] = useState(false)
+
+  const handleSearchChange = searchTerm => setSearchTerm(searchTerm)
+
+  const handleClearSearch = searchTerm => {
+    setSearchTerm('')
+    setSearchResults([])
+  }
+
+  const handleSearch = event => {
+    event.preventDefault()
+    console.log('searchTerm: ', searchTerm)
+  }
+
   return (
     <>
-      <NewMarket />
+      <NewMarket
+        searchTerm={searchTerm}
+        isSearching={isSearching}
+        handleSearchChange={handleSearchChange}
+        handleClearSearch={handleClearSearch}
+        handleSearch={handleSearch}
+      />
       <MarketList />
     </>
   )

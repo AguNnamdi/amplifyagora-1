@@ -11,7 +11,13 @@ import { API, graphqlOperation } from 'aws-amplify'
 import { createMarket } from '../graphql/mutations'
 import { UserContext } from '../App'
 
-const NewMarket = () => {
+const NewMarket = ({
+  searchTerm,
+  isSearching,
+  handleSearchChange,
+  handleClearSearch,
+  handleSearch,
+}) => {
   const { user } = useContext(UserContext)
   const [marketName, setMarketName] = useState('')
   const [addMarketDialog, setAddMarketDialog] = useState(false)
@@ -68,7 +74,30 @@ const NewMarket = () => {
             onClick={() => setAddMarketDialog(true)}
           />
         </h1>
+
+        <Form inline={true} onSubmit={handleSearch}>
+          <Form.Item>
+            <Input
+              placeholder="Search Markets..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              icon="circle-cross"
+              onIconClick={handleClearSearch}
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="info"
+              icon="search"
+              onClick={handleSearch}
+              loading={isSearching}
+            >
+              Search
+            </Button>
+          </Form.Item>
+        </Form>
       </div>
+
       <Dialog
         title="Create New Market"
         visible={addMarketDialog}
