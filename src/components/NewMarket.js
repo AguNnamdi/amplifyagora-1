@@ -10,10 +10,11 @@ import {
 import { API, graphqlOperation } from 'aws-amplify'
 import { createMarket } from '../graphql/mutations'
 import { UserContext } from '../App'
+import useForm from '../components/helpers/useForm'
 
 const NewMarket = () => {
   const { user } = useContext(UserContext)
-  const [marketName, setMarketName] = useState('')
+  const { values, handleChange, handleSubmit } = useForm(handleAddMarket)
   const [addMarketDialog, setAddMarketDialog] = useState(false)
   const tags = [
     'Arts',
@@ -22,24 +23,21 @@ const NewMarket = () => {
     'Crafts',
     'Entertainment',
   ]
-  const [selectedTags, setSelectedTags] = useState([])
   const [options, setOptions] = useState([])
 
-  const handleAddMarket = async event => {
+  async function handleAddMarket(event) {
     try {
-      event.preventDefault()
       setAddMarketDialog(false)
       const input = {
-        name: marketName,
-        tags: selectedTags,
+        name: values.marketName,
+        tags: values.selectedTags,
         owner: user.username,
       }
       const result = await API.graphql(
         graphqlOperation(createMarket, { input })
       )
       console.info(`Created market: id ${result.data.createMarket.id}`)
-      setMarketName('')
-      setSelectedTags([])
+      handleChange({ marketName: '', selectedTags: [] })
     } catch (error) {
       console.error('Error adding new market ', error)
       Notification.error({
@@ -83,9 +81,9 @@ const NewMarket = () => {
                 placeholder="Market Name"
                 type="text"
                 name="marketName"
-                value={marketName}
+                value={values.marketName}
                 trim={true}
-                onChange={marketName => setMarketName(marketName)}
+                onChange={marketName => handleChange({ marketName })}
                 required
               />
             </Form.Item>
@@ -94,8 +92,9 @@ const NewMarket = () => {
                 multiple={true}
                 filterable={true}
                 placeholder="Market Tags"
-                value={selectedTags}
-                onChange={selectedTags => setSelectedTags(selectedTags)}
+                name="selectedTags"
+                value={values.selectedTags}
+                onChange={selectedTags => handleChange({ selectedTags })}
                 remoteMethod={handleFilteredTags}
                 remote={true}
               >
@@ -115,8 +114,8 @@ const NewMarket = () => {
           <Button
             type="primary"
             nativeType="submit"
-            disabled={!marketName}
-            onClick={event => handleAddMarket(event)}
+            disabled={!values.marketName}
+            onClick={event => handleSubmit(event)}
           >
             Add
           </Button>
