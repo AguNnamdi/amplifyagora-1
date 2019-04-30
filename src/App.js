@@ -28,7 +28,7 @@ const App = () => {
             <Route
               path="/markets/:marketId"
               component={({ match }) => (
-                <MarketPage marketId={match.params.marketId} />
+                <MarketPage user={user} marketId={match.params.marketId} />
               )}
             />
           </div>
