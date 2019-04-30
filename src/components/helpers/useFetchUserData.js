@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react'
 import { Auth, Hub } from 'aws-amplify'
 
 const useFetchUserData = () => {
-  const [data, setData] = useState({ user: null })
+  const [user, setUser] = useState(null)
   const [isSignedIn, setIsSignedIn] = useState(false)
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const user = await Auth.currentAuthenticatedUser()
-        user ? setData({ user }) : setData({ user: null })
+        const data = await Auth.currentAuthenticatedUser()
+        data ? setUser(data) : setUser(null)
       } catch (error) {
         console.error(error)
       }
@@ -49,13 +49,13 @@ const useFetchUserData = () => {
   const handleSignout = async () => {
     try {
       await Auth.signOut()
-      setData({ user: null })
+      setUser(null)
     } catch (error) {
       console.error('Error signing out user ', error)
     }
   }
 
-  return { data, handleSignout }
+  return { user, handleSignout }
 }
 
 export default useFetchUserData
