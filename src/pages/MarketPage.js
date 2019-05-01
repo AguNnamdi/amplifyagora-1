@@ -1,37 +1,18 @@
-import React, { useEffect, useState } from 'react'
-import { API, graphqlOperation } from 'aws-amplify'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import { Loading, Tabs, Icon } from 'element-react'
-import { getMarket } from '../graphql/queries'
+import Error from '../components/Error'
+import useFetchMarketData from '../components/helpers/useFetchMarketData'
 import NewProduct from '../components/NewProduct'
 import Product from '../components/Product'
 
 const MarketPage = ({ marketId, user }) => {
-  const [market, setMarket] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isMarketOwner, setIsMarketOwner] = useState(false)
+  const { market, isMarketOwner, isLoading, isError } = useFetchMarketData({
+    marketId,
+    user,
+  })
 
-  useEffect(() => {
-    const handleGetMarket = async () => {
-      setIsLoading(true)
-      try {
-        const input = {
-          id: marketId,
-        }
-        const result = await API.graphql(graphqlOperation(getMarket, input))
-        if (result) {
-          setMarket(result.data.getMarket)
-          setIsMarketOwner(user.username === result.data.getMarket.owner)
-          setIsLoading(false)
-        }
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    handleGetMarket()
-  }, [])
-
-  return isLoading ? (
+  return isLoading && !isError ? (
     <Loading fullscreen={true} />
   ) : (
     <>
