@@ -6,6 +6,8 @@
 
 This is a clone and coding-along-repo, see [reedbarger/amplifyagora](https://github.com/reedbarger/amplifyagora).
 
+The app uses React Hooks instead of classes where possible.
+
 ## Tech used
 
 **Built with**
