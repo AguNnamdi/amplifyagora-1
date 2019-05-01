@@ -2,7 +2,7 @@ import { useEffect, useReducer } from 'react'
 import { API, graphqlOperation } from 'aws-amplify'
 import { getMarket } from '../../graphql/queries'
 
-export default function useFetchMarketData({ marketId, user }) {
+const useFetchMarketData = ({ marketId, user }) => {
   const [state, dispatch] = useReducer(marketFetchReducer, {
     isLoading: true,
     isError: false,
@@ -38,21 +38,32 @@ export default function useFetchMarketData({ marketId, user }) {
   }
 
   useEffect(() => {
+    let didCancel = false
+
     const fetchMarket = async () => {
       dispatch({ type: 'FETCH_INIT' })
       try {
         const input = { id: marketId }
         const result = await API.graphql(graphqlOperation(getMarket, input))
-        dispatch({
-          type: 'FETCH_SUCCESS',
-          payload: result.data.getMarket,
-        })
+        if (!didCancel) {
+          dispatch({
+            type: 'FETCH_SUCCESS',
+            payload: result.data.getMarket,
+          })
+        }
       } catch (error) {
-        dispatch({ type: 'FETCH_FAILURE' })
+        if (!didCancel) {
+          dispatch({ type: 'FETCH_FAILURE' })
+        }
       }
     }
     fetchMarket()
+    return () => {
+      didCancel = true
+    }
   }, [dispatch, marketId])
 
   return { ...state }
 }
+
+export default useFetchMarketData
