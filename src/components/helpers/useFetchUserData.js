@@ -5,26 +5,42 @@ const useFetchUserData = () => {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
+    let didCancel = false
+
     const fetchUserData = async () => {
       try {
         const data = await Auth.currentAuthenticatedUser()
-        data ? setUser(data) : setUser(null)
+        if (!didCancel) {
+          data ? setUser(data) : setUser(null)
+        }
       } catch (error) {
-        console.error(error)
+        if (!didCancel) {
+          console.error(error)
+        }
       }
     }
     fetchUserData()
+    return () => {
+      didCancel = true
+    }
   }, [])
 
   useEffect(() => {
+    let didCancel = true
+
     const HubListener = () => {
       Hub.listen('auth', data => {
         const { payload } = data
-        onAuthEvent(payload)
+        if (!didCancel) {
+          onAuthEvent(payload)
+        }
       })
     }
     HubListener()
-    return Hub.remove('auth')
+    return () => {
+      Hub.remove('auth')
+      didCancel = true
+    }
   }, [])
 
   const onAuthEvent = payload => {
