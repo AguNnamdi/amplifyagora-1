@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { PhotoPicker } from 'aws-amplify-react'
+import { Storage, Auth, API, graphqlOperation } from 'aws-amplify'
 import {
   Form,
   Button,
@@ -8,9 +9,12 @@ import {
   Radio,
   Progress,
 } from 'element-react'
+import { createProduct } from '../graphql/mutations'
+import aws_exports from '../aws-exports'
 import useForm from '../components/helpers/useForm'
+import { convertDollarsToCents } from '../utils'
 
-const NewProduct = () => {
+const NewProduct = ({ marketId }) => {
   const initialValues = {
     description: '',
     price: '',
@@ -23,9 +27,40 @@ const NewProduct = () => {
     initialValues
   )
 
-  function handleAddProduct(event) {
-    if (event) event.preventDefault()
-    console.log('values: ', values)
+  async function handleAddProduct(event) {
+    try {
+      const visibility = 'public'
+      const { identityId } = await Auth.currentCredentials()
+      const fileName = `/${visibility}/${identityId}/${Date.now()}-${
+        values.image.name
+      }}`
+      const uploadedFile = await Storage.put(fileName, values.image.file, {
+        currentType: values.image.type,
+      })
+      const file = {
+        key: uploadedFile.key,
+        bucket: aws_exports.aws_user_files_s3_bucket,
+        region: aws_exports.aws_project_region,
+      }
+      const input = {
+        productMarketId: marketId,
+        description: values.description,
+        shipped: values.shipped,
+        price: convertDollarsToCents(values.price),
+        file,
+      }
+      const result = await API.graphql(
+        graphqlOperation(createProduct, { input })
+      )
+      console.log('result: ', result)
+      Notification({
+        title: 'Success',
+        message: 'Product successfully created',
+        type: 'success',
+      })
+    } catch (error) {
+      console.error('Error adding product: ', error)
+    }
   }
 
   return (
@@ -107,12 +142,18 @@ const NewProduct = () => {
           />
           <Form.Item>
             <Button
-              disabled={!values.description || !values.price || !values.image}
+              disabled={
+                !values.description ||
+                !values.price ||
+                !values.image ||
+                values.isSubmitting
+              }
               type="primary"
               nativeType="submit"
+              loading={values.isSubmitting}
               onClick={event => handleSubmit(event)}
             >
-              Add Product
+              {values.isSubmitting ? 'Uploading ...' : 'Add Product'}
             </Button>
           </Form.Item>
         </Form>
