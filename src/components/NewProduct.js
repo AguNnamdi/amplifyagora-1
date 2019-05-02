@@ -8,25 +8,24 @@ import {
   Radio,
   Progress,
 } from 'element-react'
+import useForm from '../components/helpers/useForm'
 
 const NewProduct = () => {
-  const [values, setValues] = useState({
+  const initialValues = {
     description: '',
     price: '',
+    imagePreview: '',
+    image: '',
     shipped: false,
-  })
-
-  const handleAddProduct = event => {
-    if (event) event.preventDefault()
-    console.log('Product added')
   }
+  const { values, handleChange, handleSubmit } = useForm(
+    handleAddProduct,
+    initialValues
+  )
 
-  const handleChange = event => {
-    event.persist()
-    setValues(values => ({
-      ...values,
-      [event.target.name]: event.target.value,
-    }))
+  function handleAddProduct(event) {
+    if (event) event.preventDefault()
+    console.log('values: ', values)
   }
 
   return (
@@ -40,7 +39,7 @@ const NewProduct = () => {
               icon="information"
               value={values.description}
               placeholder="Description"
-              onChange={description => setValues({ description })}
+              onChange={description => handleChange({ description })}
             />
           </Form.Item>
           <Form.Item label="Set Product Price">
@@ -49,7 +48,7 @@ const NewProduct = () => {
               icon="plus"
               value={values.price}
               placeholder="Price ($USD)"
-              onChange={price => setValues({ price })}
+              onChange={price => handleChange({ price })}
             />
           </Form.Item>
           <Form.Item label="Is the product shipped or emailed to the customer?">
@@ -57,22 +56,62 @@ const NewProduct = () => {
               <Radio
                 value="true"
                 checked={values.shipped === true}
-                onChange={() => setValues({ shipped: true })}
+                onChange={() => handleChange({ shipped: true })}
               >
                 Shipped
               </Radio>
               <Radio
                 value="false"
                 checked={values.shipped === false}
-                onChange={() => setValues({ shipped: false })}
+                onChange={() => handleChange({ shipped: false })}
               >
                 Emailed
               </Radio>
             </div>
           </Form.Item>
-          <PhotoPicker />
+          {values.imagePreview && (
+            <img
+              className="image-preview"
+              src={values.imagePreview}
+              alt="Product Preview"
+            />
+          )}
+          <PhotoPicker
+            title="Product Image"
+            preview="hidden"
+            onLoad={url => handleChange({ imagePreview: url })}
+            onPick={file => handleChange({ image: file })}
+            theme={{
+              formContainer: {
+                margin: 0,
+                padding: '0.8em',
+              },
+              formSection: {
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+              },
+              sectionBody: {
+                margin: 0,
+                width: '250px',
+              },
+              sectionHeader: {
+                padding: '0.2em',
+                color: 'var(--darkAmazonOrange)',
+              },
+              photoPickerButton: {
+                display: 'none',
+              },
+            }}
+          />
           <Form.Item>
-            <Button type="primary" onClick={handleAddProduct}>
+            <Button
+              disabled={!values.description || !values.price || !values.image}
+              type="primary"
+              nativeType="submit"
+              onClick={event => handleSubmit(event)}
+            >
               Add Product
             </Button>
           </Form.Item>

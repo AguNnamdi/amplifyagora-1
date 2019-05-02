@@ -20,7 +20,11 @@ const NewMarket = ({
   handleSearch,
 }) => {
   const { user } = useContext(UserContext)
-  const { values, handleChange, handleSubmit } = useForm(handleAddMarket)
+  const initialValues = { marketName: '', selectedTags: [] }
+  const { values, handleChange, handleSubmit } = useForm(
+    handleAddMarket,
+    initialValues
+  )
   const [addMarketDialog, setAddMarketDialog] = useState(false)
   const tags = [
     'Arts',
