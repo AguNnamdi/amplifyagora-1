@@ -13,10 +13,10 @@ const useForm = (callback, initialValues) => {
       isSubmitting: true,
     }))
     callback()
-    setValues({
+    setValues(() => ({
       ...initialValues,
       isSubmitting: false,
-    })
+    }))
   }
 
   const handleChange = newValues => {
