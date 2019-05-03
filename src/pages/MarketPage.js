@@ -57,11 +57,11 @@ const MarketPage = ({ marketId, user }) => {
           }
           name="2"
         >
-          {/* <div className="product list"> */}
-          {/*   {market.products.items.map(product => ( */}
-          {/*     <Product product={product} /> */}
-          {/*   ))} */}
-          {/* </div> */}
+          <div className="product list">
+            {market.products.items.map(product => (
+              <Product product={product} key={product.id} />
+            ))}
+          </div>
         </Tabs.Pane>
       </Tabs>
     </>
