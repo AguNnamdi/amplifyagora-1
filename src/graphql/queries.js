@@ -9,6 +9,18 @@ export const getMarket = `query GetMarket($id: ID!) {
       items {
         id
         description
+        market {
+          id
+          name
+          tags
+          owner
+          createdAt
+        }
+        file {
+          bucket
+          region
+          key
+        }
         price
         shipped
         owner
@@ -32,6 +44,14 @@ export const listMarkets = `query ListMarkets(
       id
       name
       products {
+        items {
+          id
+          description
+          price
+          shipped
+          owner
+          createdAt
+        }
         nextToken
       }
       tags
@@ -50,6 +70,14 @@ export const getProduct = `query GetProduct($id: ID!) {
       id
       name
       products {
+        items {
+          id
+          description
+          price
+          shipped
+          owner
+          createdAt
+        }
         nextToken
       }
       tags
@@ -80,6 +108,9 @@ export const listProducts = `query ListProducts(
       market {
         id
         name
+        products {
+          nextToken
+        }
         tags
         owner
         createdAt
@@ -107,6 +138,27 @@ export const getUser = `query GetUser($id: ID!) {
     orders {
       items {
         id
+        product {
+          id
+          description
+          price
+          shipped
+          owner
+          createdAt
+        }
+        user {
+          id
+          username
+          email
+          registered
+        }
+        shippingAddress {
+          city
+          country
+          address_line1
+          address_line2
+          address_zip
+        }
         createdAt
       }
       nextToken
@@ -130,6 +182,14 @@ export const searchMarkets = `query SearchMarkets(
       id
       name
       products {
+        items {
+          id
+          description
+          price
+          shipped
+          owner
+          createdAt
+        }
         nextToken
       }
       tags
