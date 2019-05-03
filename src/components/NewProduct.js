@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { PhotoPicker } from 'aws-amplify-react'
 import { Storage, Auth, API, graphqlOperation } from 'aws-amplify'
 import {
@@ -22,6 +22,7 @@ const NewProduct = ({ marketId }) => {
     image: '',
     shipped: false,
   }
+  const [percentUploaded, setPercentUploaded] = useState(0)
   const { values, handleChange, handleSubmit } = useForm(
     handleAddProduct,
     initialValues
@@ -33,9 +34,16 @@ const NewProduct = ({ marketId }) => {
       const { identityId } = await Auth.currentCredentials()
       const fileName = `/${visibility}/${identityId}/${Date.now()}-${
         values.image.name
-      }}`
+      }`
       const uploadedFile = await Storage.put(fileName, values.image.file, {
-        currentType: values.image.type,
+        contentType: values.image.type,
+        progressCallback: progress => {
+          console.log(`Uploaded: ${progress.loaded}/${progress.total}`)
+          const percentUploaded = Math.round(
+            (progress.loaded / progress.total) * 100
+          )
+          setPercentUploaded(percentUploaded)
+        },
       })
       const file = {
         key: uploadedFile.key,
@@ -109,6 +117,13 @@ const NewProduct = ({ marketId }) => {
               className="image-preview"
               src={values.imagePreview}
               alt="Product Preview"
+            />
+          )}
+          {percentUploaded > 0 && (
+            <Progress
+              type="circle"
+              className="progress"
+              percentage={percentUploaded}
             />
           )}
           <PhotoPicker
