@@ -21,10 +21,7 @@ const NewMarket = ({
 }) => {
   const { user } = useContext(UserContext)
   const initialValues = { marketName: '', selectedTags: [] }
-  const { values, handleChange, handleSubmit } = useForm(
-    handleAddMarket,
-    initialValues
-  )
+  const { values, handleChange, handleSubmit } = useForm(initialValues)
   const [addMarketDialog, setAddMarketDialog] = useState(false)
   const tags = [
     'Arts',
@@ -35,7 +32,7 @@ const NewMarket = ({
   ]
   const [options, setOptions] = useState([])
 
-  async function handleAddMarket(event) {
+  const handleAddMarket = async event => {
     try {
       setAddMarketDialog(false)
       const input = {
@@ -148,7 +145,7 @@ const NewMarket = ({
             type="primary"
             nativeType="submit"
             disabled={!values.marketName}
-            onClick={event => handleSubmit(event)}
+            onClick={event => handleSubmit(event, handleAddMarket)}
           >
             Add
           </Button>

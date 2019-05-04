@@ -23,12 +23,9 @@ const NewProduct = ({ marketId }) => {
     shipped: false,
   }
   const [percentUploaded, setPercentUploaded] = useState(0)
-  const { values, handleChange, handleSubmit } = useForm(
-    handleAddProduct,
-    initialValues
-  )
+  const { values, handleChange, handleSubmit } = useForm(initialValues)
 
-  async function handleAddProduct(event) {
+  const handleAddProduct = async event => {
     try {
       const visibility = 'public'
       const { identityId } = await Auth.currentCredentials()
@@ -166,7 +163,7 @@ const NewProduct = ({ marketId }) => {
               type="primary"
               nativeType="submit"
               loading={values.isSubmitting}
-              onClick={event => handleSubmit(event)}
+              onClick={event => handleSubmit(event, handleAddProduct)}
             >
               {values.isSubmitting ? 'Uploading ...' : 'Add Product'}
             </Button>

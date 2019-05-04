@@ -1,12 +1,12 @@
 import { useState } from 'react'
 
-const useForm = (callback, initialValues) => {
+const useForm = initialValues => {
   const [values, setValues] = useState({
     ...initialValues,
     isSubmitting: false,
   })
 
-  const handleSubmit = event => {
+  const handleSubmit = (event, callback) => {
     if (event) event.preventDefault()
     setValues(prevValues => ({
       ...prevValues,
