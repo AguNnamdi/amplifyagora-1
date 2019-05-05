@@ -60,7 +60,6 @@ const useFetchUserData = () => {
   const handleSignout = async () => {
     try {
       await Auth.signOut()
-      setIsSignedIn(false)
       setUser(null)
     } catch (error) {
       console.error('Error signing out user ', error)
