@@ -35,7 +35,6 @@ const HomePage = () => {
           },
         })
       )
-      console.log('{ result }: ', { result })
       setSearchResults(result.data.searchMarkets.items)
       setIsSearching(false)
     } catch (error) {
