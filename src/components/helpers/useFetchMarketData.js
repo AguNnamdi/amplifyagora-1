@@ -7,64 +7,67 @@ import {
   onDeleteProduct,
 } from '../../graphql/subscriptions'
 
+const fetchMarketReducer = (state, action) => {
+  switch (action.type) {
+    case 'FETCH_MARKET_INIT':
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      }
+    case 'FETCH_MARKET_SUCCESS':
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        market: action.payload.market,
+        isMarketOwner: action.payload.isMarketOwner,
+      }
+    case 'FETCH_MARKET_FAILURE':
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+      }
+    case 'FETCH_PRODUCTS':
+      return {
+        ...state,
+        market: action.payload,
+      }
+    default:
+      throw new Error()
+  }
+}
+
 const useFetchMarketData = ({ marketId, user }) => {
-  const [state, dispatch] = useReducer(reducer, {
+  const initialState = {
     isLoading: true,
     isError: false,
     market: {},
     isMarketOwner: false,
-  })
-
-  function reducer(state, action) {
-    switch (action.type) {
-      case 'FETCH_MARKET_INIT':
-        return {
-          ...state,
-          isLoading: true,
-          isError: false,
-        }
-      case 'FETCH_MARKET_SUCCESS':
-        return {
-          ...state,
-          isLoading: false,
-          isError: false,
-          market: action.payload,
-          isMarketOwner: user.username === action.payload.owner,
-        }
-      case 'FETCH_MARKET_FAILURE':
-        return {
-          ...state,
-          isLoading: false,
-          isError: true,
-        }
-      case 'FETCH_PRODUCTS':
-        return {
-          ...state,
-          market: action.payload,
-        }
-      default:
-        throw new Error()
-    }
   }
+  const [state, dispatch] = useReducer(fetchMarketReducer, initialState)
 
   useEffect(() => {
-    let mounted = true
-
+    let isMounted = true
     const fetchMarket = async () => {
-      if (mounted) {
+      if (isMounted) {
         dispatch({ type: 'FETCH_MARKET_INIT' })
       }
       try {
-        if (mounted) {
+        if (isMounted) {
           const input = { id: marketId }
           const result = await API.graphql(graphqlOperation(getMarket, input))
+          console.log('result: ', result)
+          const isMarketOwner = user.username === result.data.getMarket.owner
+          console.log('isMarketOwner: ', isMarketOwner)
           dispatch({
             type: 'FETCH_MARKET_SUCCESS',
-            payload: result.data.getMarket,
+            payload: { market: result.data.getMarket, isMarketOwner },
           })
         }
       } catch (error) {
-        if (mounted) {
+        if (isMounted) {
           dispatch({ type: 'FETCH_MARKET_FAILURE' })
         }
       }
@@ -72,8 +75,10 @@ const useFetchMarketData = ({ marketId, user }) => {
 
     fetchMarket()
 
-    return () => (mounted = false)
-  }, [marketId])
+    return () => {
+      isMounted = false
+    }
+  }, [marketId, user.username])
 
   useEffect(() => {
     const createProductListener = API.graphql(
@@ -128,9 +133,9 @@ const useFetchMarketData = ({ marketId, user }) => {
       updateProductListener.unsubscribe()
       deleteProductListener.unsubscribe()
     }
-  }, [state])
+  }, [state.market])
 
-  return { ...state }
+  return state
 }
 
 export default useFetchMarketData
