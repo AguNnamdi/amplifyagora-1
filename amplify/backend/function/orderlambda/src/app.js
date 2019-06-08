@@ -1,7 +1,6 @@
 var express = require('express')
 var bodyParser = require('body-parser')
 var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
-require('dotenv').config()
 var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 
 // declare a new express app
