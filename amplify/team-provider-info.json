@@ -1,0 +1,19 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplifyagora-20190502135359-authRole",
+            "UnauthRoleArn": "arn:aws:iam::966264475481:role/amplifyagora-20190502135359-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::966264475481:role/amplifyagora-20190502135359-authRole",
+            "Region": "eu-central-1",
+            "DeploymentBucketName": "amplifyagora-20190502135359-deployment",
+            "UnauthRoleName": "amplifyagora-20190502135359-unauthRole",
+            "StackName": "amplifyagora-20190502135359",
+            "StackId": "arn:aws:cloudformation:eu-central-1:966264475481:stack/amplifyagora-20190502135359/f8a151f0-6cd0-11e9-b1da-0a62f85f92f4"
+        },
+        "categories": {
+            "auth": {
+                "cognito6fa29c96": {}
+            }
+        }
+    }
+}
