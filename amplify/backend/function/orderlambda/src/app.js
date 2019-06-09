@@ -43,6 +43,7 @@ const chargeHandler = async (req, res, next) => {
     if (charge.status === 'succeeded') {
       req.charge = charge
       req.description = description
+      req.email = req.body.email
       next()
     }
   } catch (error) {
@@ -50,8 +51,15 @@ const chargeHandler = async (req, res, next) => {
   }
 }
 
+const convertCentsToDollars = price => (price / 100).toFixed(2)
+
 const emailHandler = (req, res) => {
-  const { charge } = req
+  const {
+    charge,
+    description,
+    email: { shipped, customerEmail, ownerEmail },
+  } = req
+
   ses.sendEmail(
     {
       Source: config.adminEmail,
@@ -66,7 +74,28 @@ const emailHandler = (req, res) => {
         Body: {
           Html: {
             Charset: 'UTF-8',
-            Data: '<h3> Order Processed!</h3',
+            Data: `<h3> Order Processed!</h3
+            <p><span style="font-weight: bold">${description}</span> - USD ${convertCentsToDollars(
+              charge.amount
+            )}</p>
+            <p>Customer Email: <a href="mailto:${customerEmail}">${customerEmail}</a></p>
+            <p>Contact your seller: <a href="mailto:${ownerEmail}">${ownerEmail}</a></p>
+            ${
+              shipped
+                ? `<h4>Mailing Address</h4>
+                <p>${charge.source.name}</p>
+                <p>${charge.source.address_line1}</p>
+                <p>${charge.source.address.city}, ${
+                    charge.source.address.state
+                  }, ${charge.source.adress_zip}</p>
+                `
+                : 'Emailed product'
+            }
+            <p style="font-style: italic; color: grey;>${
+              shipped
+                ? 'Your product will be shipped in 2-3 days'
+                : 'Check your verified email for your product'
+            }</p>`,
           },
         },
       },
@@ -76,7 +105,7 @@ const emailHandler = (req, res) => {
         return res.status(500).json({ error })
       }
       res.json({
-        message: 'Order processed successfully',
+        message: 'Order processed successfully!',
         charge,
         data,
       })
@@ -85,11 +114,6 @@ const emailHandler = (req, res) => {
 }
 
 app.post('/charge', chargeHandler, emailHandler)
-
-app.post('/charge/*', function(req, res) {
-  // Add your code here
-  res.json({ success: 'post call succeed!', url: req.url, body: req.body })
-})
 
 app.listen(3000, function() {
   console.log('App started')
