@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useReducer, useState, useEffect } from 'react'
 import { API, graphqlOperation, Auth, Hub } from 'aws-amplify'
 import { getUser } from '../../graphql/queries'
 import { registerUser } from '../../graphql/mutations'
@@ -128,7 +128,7 @@ const useFetchUserData = () => {
     }
   }
 
-  return { user, handleSignout }
+  return { state, handleSignout }
 }
 
 export default useFetchUserData
