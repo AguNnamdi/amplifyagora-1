@@ -5,7 +5,7 @@ import HomePage from './pages/HomePage'
 import ProfilePage from './pages/ProfilePage'
 import MarketPage from './pages/MarketPage'
 import Navbar from './components/Navbar'
-import useFetchUserData from './components/helpers/useFetchUserData'
+import useAmplifyAuth from './components/helpers/useAmplifyAuth'
 import './App.css'
 
 export const UserContext = React.createContext()
@@ -14,7 +14,7 @@ const App = () => {
   const {
     state: { user },
     handleSignout,
-  } = useFetchUserData()
+  } = useAmplifyAuth()
 
   return !user ? (
     <Authenticator theme={theme} />

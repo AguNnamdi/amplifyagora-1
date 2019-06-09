@@ -9,7 +9,7 @@ import {
   RESET_USER_DATA,
 } from './constants'
 
-const fetchUserDataReducer = (state, action) => {
+const amplifyAuthReducer = (state, action) => {
   switch (action.type) {
     case FETCH_DATA_INIT:
       return {
@@ -33,14 +33,14 @@ const fetchUserDataReducer = (state, action) => {
   }
 }
 
-const useFetchUserData = () => {
+const useAmplifyAuth = () => {
   const initialState = {
     isLoading: true,
     isError: false,
     user: null,
   }
-  const [state, dispatch] = useReducer(fetchUserDataReducer, initialState)
-  const [fetchUserData, setFetchUserData] = useState(false)
+  const [state, dispatch] = useReducer(amplifyAuthReducer, initialState)
+  const [triggerFetch, setTriggerFetch] = useState(false)
 
   useEffect(() => {
     let isMounted = true
@@ -77,7 +77,7 @@ const useFetchUserData = () => {
       switch (payload.event) {
         case 'signIn':
           if (isMounted) {
-            setFetchUserData(true)
+            setTriggerFetch(true)
             registerNewUser(payload.data)
             console.log('signed in')
           }
@@ -94,13 +94,13 @@ const useFetchUserData = () => {
       Hub.remove('auth')
       isMounted = false
     }
-  }, [fetchUserData])
+  }, [triggerFetch])
 
   const handleSignout = async () => {
     try {
       console.log('signed out')
       await Auth.signOut()
-      setFetchUserData(false)
+      setTriggerFetch(false)
       dispatch({ type: RESET_USER_DATA })
     } catch (error) {
       console.error('Error signing out user ', error)
@@ -134,4 +134,4 @@ const useFetchUserData = () => {
   return { state, handleSignout }
 }
 
-export default useFetchUserData
+export default useAmplifyAuth
