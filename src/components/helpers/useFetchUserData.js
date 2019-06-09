@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Auth, Hub } from 'aws-amplify'
+import { API, graphqlOperation, Auth, Hub } from 'aws-amplify'
+import { getUser } from '../../graphql/queries'
+import { registerUser } from '../../graphql/mutations'
 
 const useFetchUserData = () => {
   const [user, setUser] = useState(null)
@@ -31,6 +33,7 @@ const useFetchUserData = () => {
         case 'signIn':
           if (mounted) {
             setIsSignedIn(true)
+            registerNewUser(payload.data)
             console.log('signed in')
           }
           break
@@ -63,6 +66,30 @@ const useFetchUserData = () => {
       setUser(null)
     } catch (error) {
       console.error('Error signing out user ', error)
+    }
+  }
+
+  const registerNewUser = async signInData => {
+    const getUserInput = {
+      id: signInData.signInUserSession.idToken.payload.sub,
+    }
+    const { data } = await API.graphql(graphqlOperation(getUser, getUserInput))
+    // if user wasn't registered before, register them now
+    if (!data.getUser) {
+      try {
+        const registerUserInput = {
+          ...getUserInput,
+          username: signInData.username,
+          email: signInData.signInUserSession.idToken.payload.email,
+          registered: true,
+        }
+        const newUser = await API.graphql(
+          graphqlOperation(registerUser, { input: registerUserInput })
+        )
+        console.log({ newUser })
+      } catch (error) {
+        console.error('Error registering new user', error)
+      }
     }
   }
 
