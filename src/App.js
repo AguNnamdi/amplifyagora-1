@@ -11,7 +11,10 @@ import './App.css'
 export const UserContext = React.createContext()
 
 const App = () => {
-  const { user, handleSignout } = useFetchUserData()
+  const {
+    state: { user },
+    handleSignout,
+  } = useFetchUserData()
 
   return !user ? (
     <Authenticator theme={theme} />
