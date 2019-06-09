@@ -24,11 +24,7 @@ const fetchMarketReducer = (state, action) => {
         isMarketOwner: action.payload.isMarketOwner,
       }
     case 'FETCH_MARKET_FAILURE':
-      return {
-        ...state,
-        isLoading: false,
-        isError: true,
-      }
+      return { ...state, isLoading: false, isError: true }
     case 'FETCH_PRODUCTS':
       return {
         ...state,
