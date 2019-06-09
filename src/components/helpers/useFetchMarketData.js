@@ -6,16 +6,22 @@ import {
   onUpdateProduct,
   onDeleteProduct,
 } from '../../graphql/subscriptions'
+import {
+  FETCH_DATA_INIT,
+  FETCH_DATA_SUCCESS,
+  FETCH_DATA_FAILURE,
+  FETCH_PRODUCTS,
+} from './constants'
 
 const fetchMarketReducer = (state, action) => {
   switch (action.type) {
-    case 'FETCH_MARKET_INIT':
+    case FETCH_DATA_INIT:
       return {
         ...state,
         isLoading: true,
         isError: false,
       }
-    case 'FETCH_MARKET_SUCCESS':
+    case FETCH_DATA_SUCCESS:
       return {
         ...state,
         isLoading: false,
@@ -23,9 +29,9 @@ const fetchMarketReducer = (state, action) => {
         market: action.payload.market,
         isMarketOwner: action.payload.isMarketOwner,
       }
-    case 'FETCH_MARKET_FAILURE':
+    case FETCH_DATA_FAILURE:
       return { ...state, isLoading: false, isError: true }
-    case 'FETCH_PRODUCTS':
+    case FETCH_PRODUCTS:
       return {
         ...state,
         market: action.payload,
@@ -48,7 +54,7 @@ const useFetchMarketData = ({ marketId, user }) => {
     let isMounted = true
     const fetchMarket = async () => {
       if (isMounted) {
-        dispatch({ type: 'FETCH_MARKET_INIT' })
+        dispatch({ type: FETCH_DATA_INIT })
       }
       try {
         if (isMounted) {
@@ -56,13 +62,13 @@ const useFetchMarketData = ({ marketId, user }) => {
           const result = await API.graphql(graphqlOperation(getMarket, input))
           const isMarketOwner = user.username === result.data.getMarket.owner
           dispatch({
-            type: 'FETCH_MARKET_SUCCESS',
+            type: FETCH_DATA_SUCCESS,
             payload: { market: result.data.getMarket, isMarketOwner },
           })
         }
       } catch (error) {
         if (isMounted) {
-          dispatch({ type: 'FETCH_MARKET_FAILURE' })
+          dispatch({ type: FETCH_DATA_FAILURE })
         }
       }
     }
@@ -86,7 +92,7 @@ const useFetchMarketData = ({ marketId, user }) => {
         const updatedItems = [createdItem, ...prevItems]
         let updatedMarket = { ...state.market }
         updatedMarket.products.items = updatedItems
-        dispatch({ type: 'FETCH_PRODUCTS', payload: updatedMarket })
+        dispatch({ type: FETCH_PRODUCTS, payload: updatedMarket })
       },
     })
 

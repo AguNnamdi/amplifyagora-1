@@ -2,25 +2,31 @@ import { useReducer, useState, useEffect } from 'react'
 import { API, graphqlOperation, Auth, Hub } from 'aws-amplify'
 import { getUser } from '../../graphql/queries'
 import { registerUser } from '../../graphql/mutations'
+import {
+  FETCH_DATA_INIT,
+  FETCH_DATA_SUCCESS,
+  FETCH_DATA_FAILURE,
+  RESET_USER_DATA,
+} from './constants'
 
 const fetchUserDataReducer = (state, action) => {
   switch (action.type) {
-    case 'FETCH_USER_INIT':
+    case FETCH_DATA_INIT:
       return {
         ...state,
         isLoading: true,
         isError: false,
       }
-    case 'FETCH_USER_SUCCESS':
+    case FETCH_DATA_SUCCESS:
       return {
         ...state,
         isLoading: false,
         isError: false,
         user: action.payload.user,
       }
-    case 'FETCH_USER_FAILURE':
+    case FETCH_DATA_FAILURE:
       return { ...state, isLoading: false, isError: true }
-    case 'RESET_USER_AFTER_LOGOUT':
+    case RESET_USER_DATA:
       return { ...state, user: null }
     default:
       throw new Error()
@@ -34,28 +40,28 @@ const useFetchUserData = () => {
     user: null,
   }
   const [state, dispatch] = useReducer(fetchUserDataReducer, initialState)
-  const [isSignedIn, setIsSignedIn] = useState(false)
+  const [fetchUserData, setFetchUserData] = useState(false)
 
   useEffect(() => {
     let isMounted = true
 
     const fetchUserData = async () => {
       if (isMounted) {
-        dispatch({ type: 'FETCH_USER_INIT' })
+        dispatch({ type: FETCH_DATA_INIT })
       }
       try {
         if (isMounted) {
           const data = await Auth.currentAuthenticatedUser()
           if (data) {
             dispatch({
-              type: 'FETCH_USER_SUCCESS',
+              type: FETCH_DATA_SUCCESS,
               payload: { user: data },
             })
           }
         }
       } catch (error) {
         if (isMounted) {
-          dispatch({ type: 'FETCH_USER_FAILURE' })
+          dispatch({ type: FETCH_DATA_FAILURE })
         }
       }
     }
@@ -71,13 +77,10 @@ const useFetchUserData = () => {
       switch (payload.event) {
         case 'signIn':
           if (isMounted) {
-            setIsSignedIn(true)
+            setFetchUserData(true)
             registerNewUser(payload.data)
             console.log('signed in')
           }
-          break
-        case 'signup':
-          console.log('signed up')
           break
         default:
           return
@@ -91,14 +94,14 @@ const useFetchUserData = () => {
       Hub.remove('auth')
       isMounted = false
     }
-  }, [isSignedIn])
+  }, [fetchUserData])
 
   const handleSignout = async () => {
     try {
       console.log('signed out')
       await Auth.signOut()
-      setIsSignedIn(false)
-      dispatch({ type: 'RESET_USER_AFTER_LOGOUT' })
+      setFetchUserData(false)
+      dispatch({ type: RESET_USER_DATA })
     } catch (error) {
       console.error('Error signing out user ', error)
     }
