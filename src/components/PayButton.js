@@ -19,6 +19,14 @@ const PayButton = ({ product, user }) => {
     }
   }
 
+  const createShippingAddress = source => ({
+    city: source.adress_city,
+    country: source.address_country,
+    address_line1: source.address_lie1,
+    address_state: source.address_state,
+    address_zip: source.address_zip,
+  })
+
   const handleCharge = async token => {
     try {
       const ownerEmail = await getOwnerEmail(product.owner)
@@ -38,6 +46,11 @@ const PayButton = ({ product, user }) => {
         },
       })
       console.log({ result })
+      if ((result.charge.status = 'succeeded')) {
+        if (product.shipped) {
+          createShippingAddress(result.charge.source)
+        }
+      }
     } catch (err) {
       console.error(err)
     }
