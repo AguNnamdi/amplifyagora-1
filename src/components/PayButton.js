@@ -1,7 +1,10 @@
 import React from 'react'
 import { API, graphqlOperation } from 'aws-amplify'
 import { getUser } from '../graphql/queries'
+import { createOrder } from '../graphql/mutations'
 import StripeCheckout from 'react-stripe-checkout'
+import { Notification, Message } from 'element-react'
+import { history } from '../App'
 
 const stripeConfig = {
   currency: 'USD',
@@ -47,12 +50,41 @@ const PayButton = ({ product, user }) => {
       })
       console.log({ result })
       if ((result.charge.status = 'succeeded')) {
+        let shippingAddress = null
         if (product.shipped) {
-          createShippingAddress(result.charge.source)
+          shippingAddress = createShippingAddress(result.charge.source)
         }
+        const input = {
+          orderUserId: user.attributes.sub,
+          orderProductId: product.id,
+          shippingAddress,
+        }
+        const order = await API.graphql(
+          graphqlOperation(createOrder, { input })
+        )
+        console.log({ order })
+        Notification({
+          title: 'Success',
+          message: `${result.message}`,
+          type: 'success',
+          duration: 3000,
+          onClose: () => {
+            history.push('/')
+            Message({
+              type: 'info',
+              message: 'Check your email for details.',
+              duration: 5000,
+              showClose: true,
+            })
+          },
+        })
       }
-    } catch (err) {
-      console.error(err)
+    } catch (error) {
+      console.error(error)
+      Notification.error({
+        title: 'Error',
+        message: `${error.message || 'Error processing order'}`,
+      })
     }
   }
 

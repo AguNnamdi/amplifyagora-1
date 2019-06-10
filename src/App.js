@@ -1,12 +1,15 @@
 import React from 'react'
 import { Authenticator, AmplifyTheme } from 'aws-amplify-react'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { Router, Route } from 'react-router-dom'
+import { createBrowserHistory } from 'history'
 import HomePage from './pages/HomePage'
 import ProfilePage from './pages/ProfilePage'
 import MarketPage from './pages/MarketPage'
 import Navbar from './components/Navbar'
 import useAmplifyAuth from './components/helpers/useAmplifyAuth'
 import './App.css'
+
+export const history = createBrowserHistory()
 
 export const UserContext = React.createContext()
 
@@ -20,7 +23,7 @@ const App = () => {
     <Authenticator theme={theme} />
   ) : (
     <UserContext.Provider value={{ user }}>
-      <Router>
+      <Router history={history}>
         <>
           {/* Navigation*/}
           <Navbar user={user} handleSignout={handleSignout} />
