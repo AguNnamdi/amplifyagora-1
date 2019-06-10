@@ -20,10 +20,10 @@ const PayButton = ({ product, user }) => {
   }
 
   const createShippingAddress = source => ({
-    city: source.adress_city,
+    city: source.address_city,
     country: source.address_country,
-    address_line1: source.address_lie1,
-    address_state: source.address_state,
+    state: source.address_state,
+    address_line1: source.address_line1,
     address_zip: source.address_zip,
   })
 

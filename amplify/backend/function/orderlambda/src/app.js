@@ -85,8 +85,8 @@ const emailHandler = (req, res) => {
                 ? `<h4>Mailing Address</h4>
                 <p>${charge.source.name}</p>
                 <p>${charge.source.address_line1}</p>
-                <p>${charge.source.address.city}, ${
-                    charge.source.address.state
+                <p>${charge.source.address_city}, ${
+                    charge.source.address_state
                   }, ${charge.source.adress_zip}</p>
                 `
                 : 'Emailed product'

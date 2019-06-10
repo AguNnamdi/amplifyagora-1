@@ -155,6 +155,7 @@ export const getUser = `query GetUser($id: ID!) {
         shippingAddress {
           city
           country
+          state
           address_line1
           address_line2
           address_zip

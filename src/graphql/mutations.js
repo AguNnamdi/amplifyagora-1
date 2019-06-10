@@ -33,7 +33,7 @@ export const createMarket = `mutation CreateMarket($input: CreateMarketInput!) {
     createdAt
   }
 }
-`;
+`
 export const updateMarket = `mutation UpdateMarket($input: UpdateMarketInput!) {
   updateMarket(input: $input) {
     id
@@ -66,7 +66,7 @@ export const updateMarket = `mutation UpdateMarket($input: UpdateMarketInput!) {
     createdAt
   }
 }
-`;
+`
 export const deleteMarket = `mutation DeleteMarket($input: DeleteMarketInput!) {
   deleteMarket(input: $input) {
     id
@@ -99,7 +99,7 @@ export const deleteMarket = `mutation DeleteMarket($input: DeleteMarketInput!) {
     createdAt
   }
 }
-`;
+`
 export const createProduct = `mutation CreateProduct($input: CreateProductInput!) {
   createProduct(input: $input) {
     id
@@ -133,7 +133,7 @@ export const createProduct = `mutation CreateProduct($input: CreateProductInput!
     createdAt
   }
 }
-`;
+`
 export const updateProduct = `mutation UpdateProduct($input: UpdateProductInput!) {
   updateProduct(input: $input) {
     id
@@ -167,7 +167,7 @@ export const updateProduct = `mutation UpdateProduct($input: UpdateProductInput!
     createdAt
   }
 }
-`;
+`
 export const deleteProduct = `mutation DeleteProduct($input: DeleteProductInput!) {
   deleteProduct(input: $input) {
     id
@@ -201,7 +201,7 @@ export const deleteProduct = `mutation DeleteProduct($input: DeleteProductInput!
     createdAt
   }
 }
-`;
+`
 export const registerUser = `mutation RegisterUser($input: CreateUserInput!) {
   registerUser(input: $input) {
     id
@@ -228,6 +228,7 @@ export const registerUser = `mutation RegisterUser($input: CreateUserInput!) {
         shippingAddress {
           city
           country
+          state
           address_line1
           address_line2
           address_zip
@@ -238,7 +239,7 @@ export const registerUser = `mutation RegisterUser($input: CreateUserInput!) {
     }
   }
 }
-`;
+`
 export const updateUser = `mutation UpdateUser($input: UpdateUserInput!) {
   updateUser(input: $input) {
     id
@@ -265,6 +266,7 @@ export const updateUser = `mutation UpdateUser($input: UpdateUserInput!) {
         shippingAddress {
           city
           country
+          state
           address_line1
           address_line2
           address_zip
@@ -275,7 +277,7 @@ export const updateUser = `mutation UpdateUser($input: UpdateUserInput!) {
     }
   }
 }
-`;
+`
 export const createOrder = `mutation CreateOrder($input: CreateOrderInput!) {
   createOrder(input: $input) {
     id
@@ -318,6 +320,7 @@ export const createOrder = `mutation CreateOrder($input: CreateOrderInput!) {
     shippingAddress {
       city
       country
+      state
       address_line1
       address_line2
       address_zip
@@ -325,4 +328,4 @@ export const createOrder = `mutation CreateOrder($input: CreateOrderInput!) {
     createdAt
   }
 }
-`;
+`
