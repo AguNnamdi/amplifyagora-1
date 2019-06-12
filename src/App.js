@@ -30,7 +30,10 @@ const App = () => {
           {/* Routes */}
           <div className="app-container">
             <Route exact path="/" component={HomePage} />
-            <Route path="/profile" component={ProfilePage} />
+            <Route
+              path="/profile"
+              component={() => <ProfilePage user={user} />}
+            />
             <Route
               path="/markets/:marketId"
               component={({ match }) => (
