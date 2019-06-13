@@ -1,11 +1,11 @@
 import { useEffect, useReducer } from 'react'
 import { API, graphqlOperation } from 'aws-amplify'
-import { getMarket } from '../../graphql/queries'
+import { getMarket } from '../graphql/queries'
 import {
   onCreateProduct,
   onUpdateProduct,
   onDeleteProduct,
-} from '../../graphql/subscriptions'
+} from '../graphql/subscriptions'
 import {
   FETCH_DATA_INIT,
   FETCH_DATA_SUCCESS,

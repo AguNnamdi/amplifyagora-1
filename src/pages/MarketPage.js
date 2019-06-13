@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Loading, Tabs, Icon } from 'element-react'
-import useFetchMarketData from '../components/helpers/useFetchMarketData'
+import useFetchMarketData from '../utils/useFetchMarketData'
 import NewProduct from '../components/NewProduct'
 import Product from '../components/Product'
 

@@ -6,7 +6,7 @@ import HomePage from './pages/HomePage'
 import ProfilePage from './pages/ProfilePage'
 import MarketPage from './pages/MarketPage'
 import Navbar from './components/Navbar'
-import useAmplifyAuth from './components/helpers/useAmplifyAuth'
+import useAmplifyAuth from './utils/useAmplifyAuth'
 import './App.css'
 
 export const history = createBrowserHistory()

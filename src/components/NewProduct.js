@@ -11,7 +11,7 @@ import {
 } from 'element-react'
 import { createProduct } from '../graphql/mutations'
 import aws_exports from '../aws-exports'
-import useForm from '../components/helpers/useForm'
+import useForm from '../utils/useForm'
 import { convertDollarsToCents } from '../utils'
 
 const NewProduct = ({ marketId }) => {

@@ -10,7 +10,7 @@ import {
 import { API, graphqlOperation } from 'aws-amplify'
 import { createMarket } from '../graphql/mutations'
 import { UserContext } from '../App'
-import useForm from '../components/helpers/useForm'
+import useForm from '../utils/useForm'
 
 const NewMarket = ({
   searchTerm,

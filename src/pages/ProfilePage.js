@@ -8,7 +8,7 @@ import {
   FETCH_DATA_SUCCESS,
   FETCH_DATA_FAILURE,
   RESET_USER_DATA,
-} from '../components/helpers/constants'
+} from '../utils/constants'
 
 const getUser = `query GetUser($id: ID!) {
   getUser(id: $id) {

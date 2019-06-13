@@ -11,7 +11,7 @@ import {
   Input,
   Radio,
 } from 'element-react'
-import useForm from '../components/helpers/useForm'
+import useForm from '../utils/useForm'
 import { updateProduct, deleteProduct } from '../graphql/mutations'
 import { convertCentsToDollars, convertDollarsToCents } from '../utils'
 import { UserContext } from '../App'

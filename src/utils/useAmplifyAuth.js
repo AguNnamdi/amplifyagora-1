@@ -1,7 +1,7 @@
 import { useReducer, useState, useEffect } from 'react'
 import { API, graphqlOperation, Auth, Hub } from 'aws-amplify'
-import { getUser } from '../../graphql/queries'
-import { registerUser } from '../../graphql/mutations'
+import { getUser } from '../graphql/queries'
+import { registerUser } from '../graphql/mutations'
 import {
   FETCH_DATA_INIT,
   FETCH_DATA_SUCCESS,
