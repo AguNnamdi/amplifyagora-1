@@ -1,6 +1,5 @@
 import { useEffect, useReducer } from 'react'
 import { API, graphqlOperation } from 'aws-amplify'
-import { getMarket } from '../graphql/queries'
 import {
   onCreateProduct,
   onUpdateProduct,
@@ -13,6 +12,39 @@ import {
   FETCH_PRODUCTS,
 } from './constants'
 
+const getMarket = `query GetMarket($id: ID!) {
+  getMarket(id: $id) {
+    id
+    name
+    products (sortDirection: DESC, limit: 999) {
+      items {
+        id
+        description
+        market {
+          id
+          name
+          tags
+          owner
+          createdAt
+        }
+        file {
+          bucket
+          region
+          key
+        }
+        price
+        shipped
+        owner
+        createdAt
+      }
+      nextToken
+    }
+    tags
+    owner
+    createdAt
+  }
+}
+`
 const fetchMarketReducer = (state, action) => {
   switch (action.type) {
     case FETCH_DATA_INIT:
