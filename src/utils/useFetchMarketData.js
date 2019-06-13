@@ -84,15 +84,17 @@ const useFetchMarketData = ({ marketId, user }) => {
 
   useEffect(() => {
     let isMounted = true
+
     const fetchMarket = async () => {
       if (isMounted) {
         dispatch({ type: FETCH_DATA_INIT })
       }
       try {
+        const input = { id: marketId }
+        const result = await API.graphql(graphqlOperation(getMarket, input))
+        const isMarketOwner = user.username === result.data.getMarket.owner
+
         if (isMounted) {
-          const input = { id: marketId }
-          const result = await API.graphql(graphqlOperation(getMarket, input))
-          const isMarketOwner = user.username === result.data.getMarket.owner
           dispatch({
             type: FETCH_DATA_SUCCESS,
             payload: { market: result.data.getMarket, isMarketOwner },

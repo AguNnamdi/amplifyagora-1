@@ -50,14 +50,12 @@ const useAmplifyAuth = () => {
         dispatch({ type: FETCH_DATA_INIT })
       }
       try {
-        if (isMounted) {
-          const data = await Auth.currentAuthenticatedUser()
-          if (data) {
-            dispatch({
-              type: FETCH_DATA_SUCCESS,
-              payload: { user: data },
-            })
-          }
+        const data = await Auth.currentAuthenticatedUser()
+        if (data && isMounted) {
+          dispatch({
+            type: FETCH_DATA_SUCCESS,
+            payload: { user: data },
+          })
         }
       } catch (error) {
         if (isMounted) {
