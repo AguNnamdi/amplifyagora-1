@@ -18,7 +18,7 @@ const PayButton = ({ product, user }) => {
       const result = await API.graphql(graphqlOperation(getUser, input))
       return result.data.getUser.email
     } catch (error) {
-      console.error(`Error fetching product owner's email`, error)
+      console.error(`Error fetching product owner's email: `, error)
     }
   }
 
