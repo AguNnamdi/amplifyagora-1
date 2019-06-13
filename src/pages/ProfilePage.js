@@ -1,7 +1,8 @@
 import React, { useReducer, useEffect } from 'react'
 import { API, graphqlOperation } from 'aws-amplify'
 // prettier-ignore
-import { Tabs, Icon, Card } from 'element-react'
+import { Tabs, Icon, Card, Loading } from 'element-react'
+import Error from '../components/Error'
 import { convertCentsToDollars } from '../utils'
 import {
   FETCH_DATA_INIT,
@@ -100,7 +101,10 @@ const ProfilePage = ({ user }) => {
     }
   }, [user.attributes.sub])
 
-  const { orders } = state
+  const { orders, isLoading, isError } = state
+
+  if (isLoading) return <Loading fullscreen={true} />
+  if (isError) return <Error />
   return (
     user && (
       <>
