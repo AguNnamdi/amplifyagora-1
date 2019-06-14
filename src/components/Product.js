@@ -26,8 +26,8 @@ const Product = ({ product }) => {
     deleteProductDialog: false,
   }
   const { values, handleChange, handleSubmit } = useForm(initialValues)
-  const { user } = useContext(UserContext)
-  const isProductOwner = user && user.attributes.sub === product.owner
+  const { userAttributes } = useContext(UserContext)
+  const isProductOwner = userAttributes && userAttributes.sub === product.owner
 
   const handleDeleteProduct = async event => {
     try {
@@ -90,7 +90,9 @@ const Product = ({ product }) => {
             <span className="mx-1">
               ${convertCentsToDollars(product.price)}
             </span>
-            {!isProductOwner && <PayButton product={product} user={user} />}
+            {!isProductOwner && (
+              <PayButton product={product} userAttributes={userAttributes} />
+            )}
           </div>
         </div>
       </Card>

@@ -65,7 +65,7 @@ const profilePageReducer = (state, action) => {
   }
 }
 
-const ProfilePage = ({ user }) => {
+const ProfilePage = ({ user, userAttributes }) => {
   const initialState = {
     isLoading: true,
     isError: false,
@@ -78,7 +78,7 @@ const ProfilePage = ({ user }) => {
         width: '150',
         render: row => {
           if (row.name === 'Email') {
-            const emailVerified = user.attributes.email_verified
+            const emailVerified = userAttributes.email_verified
             return emailVerified ? (
               <Tag type="success">Verified</Tag>
             ) : (
@@ -120,7 +120,7 @@ const ProfilePage = ({ user }) => {
         dispatch({ type: FETCH_DATA_INIT })
       }
       try {
-        const input = { id: user.attributes.sub }
+        const input = { id: userAttributes.sub }
         const result = await API.graphql(graphqlOperation(getUser, input))
         if (isMounted) {
           dispatch({
@@ -138,14 +138,14 @@ const ProfilePage = ({ user }) => {
     return () => {
       isMounted = false
     }
-  }, [user.attributes.sub])
+  }, [userAttributes.sub])
 
   const { orders, columns, isLoading, isError } = state
 
   if (isLoading) return <Loading fullscreen={true} />
   if (isError) return <Error />
   return (
-    user.attributes && (
+    userAttributes && (
       <>
         <Tabs activeName="1" className="profile-tabs">
           <Tabs.Pane
@@ -161,10 +161,10 @@ const ProfilePage = ({ user }) => {
             <Table
               columns={columns}
               data={[
-                { name: 'Your Id', value: user.attributes.sub },
+                { name: 'Your Id', value: userAttributes.sub },
                 { name: 'Username', value: user.username },
-                { name: 'Email', value: user.attributes.email },
-                { name: 'Phone Number', value: user.attributes.phone_number },
+                { name: 'Email', value: userAttributes.email },
+                { name: 'Phone Number', value: userAttributes.phone_number },
                 { name: 'Delete Profile', value: 'Sorry to see you go' },
               ]}
               showHeader={false}

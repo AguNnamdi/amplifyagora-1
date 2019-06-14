@@ -6,6 +6,7 @@ import {
   FETCH_DATA_INIT,
   FETCH_DATA_SUCCESS,
   FETCH_DATA_FAILURE,
+  FETCH_USER_ATTRIBUTES,
   RESET_USER_DATA,
 } from './constants'
 
@@ -26,8 +27,10 @@ const amplifyAuthReducer = (state, action) => {
       }
     case FETCH_DATA_FAILURE:
       return { ...state, isLoading: false, isError: true }
+    case FETCH_USER_ATTRIBUTES:
+      return { ...state, userAttributes: action.payload.userAttributes }
     case RESET_USER_DATA:
-      return { ...state, user: null, userAttributes: null }
+      return { ...state, user: null, userAttributes: {} }
     default:
       throw new Error()
   }
@@ -46,6 +49,17 @@ const useAmplifyAuth = () => {
   useEffect(() => {
     let isMounted = true
 
+    const fetchUserAttributes = async authUserData => {
+      const attributesArr = await Auth.userAttributes(authUserData)
+      const attributesObj = Auth.attributesToObject(attributesArr)
+      if (isMounted) {
+        dispatch({
+          type: FETCH_USER_ATTRIBUTES,
+          payload: { userAttributes: attributesObj },
+        })
+      }
+    }
+
     const fetchUserData = async () => {
       if (isMounted) {
         dispatch({ type: FETCH_DATA_INIT })
@@ -57,6 +71,7 @@ const useAmplifyAuth = () => {
             type: FETCH_DATA_SUCCESS,
             payload: { user: data },
           })
+          fetchUserAttributes(data)
         }
       } catch (error) {
         if (isMounted) {
