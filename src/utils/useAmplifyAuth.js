@@ -24,6 +24,7 @@ const amplifyAuthReducer = (state, action) => {
         isLoading: false,
         isError: false,
         user: action.payload.user,
+        userAttributes: action.payload.userAttributes,
       }
     case FETCH_DATA_FAILURE:
       return { ...state, isLoading: false, isError: true }
@@ -41,7 +42,7 @@ const useAmplifyAuth = () => {
     isLoading: true,
     isError: false,
     user: null,
-    userAttributes: {},
+    userAttributes: null,
   }
   const [state, dispatch] = useReducer(amplifyAuthReducer, initialState)
   const [triggerFetch, setTriggerFetch] = useState(false)
@@ -52,12 +53,11 @@ const useAmplifyAuth = () => {
     const fetchUserAttributes = async authUserData => {
       const attributesArr = await Auth.userAttributes(authUserData)
       const attributesObj = Auth.attributesToObject(attributesArr)
-      if (isMounted) {
-        dispatch({
-          type: FETCH_USER_ATTRIBUTES,
-          payload: { userAttributes: attributesObj },
-        })
-      }
+      return attributesObj
+    }
+
+    const fetchUser = async () => {
+      return Auth.currentAuthenticatedUser()
     }
 
     const fetchUserData = async () => {
@@ -65,13 +65,13 @@ const useAmplifyAuth = () => {
         dispatch({ type: FETCH_DATA_INIT })
       }
       try {
-        const data = await Auth.currentAuthenticatedUser()
-        if (data && isMounted) {
+        const user = await fetchUser()
+        const userAttributes = await fetchUserAttributes(user)
+        if (userAttributes && isMounted) {
           dispatch({
             type: FETCH_DATA_SUCCESS,
-            payload: { user: data },
+            payload: { user, userAttributes },
           })
-          fetchUserAttributes(data)
         }
       } catch (error) {
         if (isMounted) {
