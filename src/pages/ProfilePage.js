@@ -65,7 +65,7 @@ const profilePageReducer = (state, action) => {
   }
 }
 
-const ProfilePage = ({ user, userAttributes }) => {
+const ProfilePage = ({ user }) => {
   const initialState = {
     isLoading: true,
     isError: false,
@@ -78,7 +78,7 @@ const ProfilePage = ({ user, userAttributes }) => {
         width: '150',
         render: row => {
           if (row.name === 'Email') {
-            const emailVerified = userAttributes.email_verified
+            const emailVerified = user.attributes.email_verified
             return emailVerified ? (
               <Tag type="success">Verified</Tag>
             ) : (
@@ -145,7 +145,7 @@ const ProfilePage = ({ user, userAttributes }) => {
   if (isLoading) return <Loading fullscreen={true} />
   if (isError) return <Error />
   return (
-    userAttributes && (
+    user.attributes && (
       <>
         <Tabs activeName="1" className="profile-tabs">
           <Tabs.Pane
@@ -161,10 +161,10 @@ const ProfilePage = ({ user, userAttributes }) => {
             <Table
               columns={columns}
               data={[
-                { name: 'Your Id', value: userAttributes.sub },
+                { name: 'Your Id', value: user.attributes.sub },
                 { name: 'Username', value: user.username },
-                { name: 'Email', value: userAttributes.email },
-                { name: 'Phone Number', value: userAttributes.phone_number },
+                { name: 'Email', value: user.attributes.email },
+                { name: 'Phone Number', value: user.attributes.phone_number },
                 { name: 'Delete Profile', value: 'Sorry to see you go' },
               ]}
               showHeader={false}

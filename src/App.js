@@ -15,7 +15,7 @@ export const UserContext = React.createContext()
 
 const App = () => {
   const {
-    state: { user, userAttributes },
+    state: { user },
     handleSignout,
   } = useAmplifyAuth()
 
@@ -32,9 +32,7 @@ const App = () => {
             <Route exact path="/" component={HomePage} />
             <Route
               path="/profile"
-              component={() => (
-                <ProfilePage user={user} userAttributes={userAttributes} />
-              )}
+              component={() => <ProfilePage user={user} />}
             />
             <Route
               path="/markets/:marketId"
