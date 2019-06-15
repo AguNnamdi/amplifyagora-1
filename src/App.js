@@ -32,14 +32,22 @@ const App = () => {
             <Route exact path="/" component={HomePage} />
             <Route
               path="/profile"
-              component={() => (
-                <ProfilePage user={user} userAttributes={userAttributes} />
+              render={props => (
+                <ProfilePage
+                  {...props}
+                  user={user}
+                  userAttributes={userAttributes}
+                />
               )}
             />
             <Route
               path="/markets/:marketId"
-              component={({ match }) => (
-                <MarketPage user={user} marketId={match.params.marketId} />
+              render={props => (
+                <MarketPage
+                  {...props}
+                  user={user}
+                  marketId={props.match.params.marketId}
+                />
               )}
             />
           </div>
