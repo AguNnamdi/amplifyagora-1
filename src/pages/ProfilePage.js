@@ -1,16 +1,28 @@
 import React, { useReducer, useEffect } from 'react'
-import { API, graphqlOperation } from 'aws-amplify'
-// prettier-ignore
-import { Input, Form, Dialog, Button, Tag, Tabs, Table, Icon, Card, Loading } from 'element-react'
+import { Auth, API, graphqlOperation } from 'aws-amplify'
+import { history } from '../App'
+import {
+  Input,
+  Form,
+  Dialog,
+  Button,
+  Tag,
+  Tabs,
+  Table,
+  Icon,
+  Card,
+  Loading,
+  Notification,
+  Message,
+} from 'element-react'
 import Error from '../components/Error'
 import { convertCentsToDollars } from '../utils'
+import useForm from '../utils/useForm'
 import {
   FETCH_DATA_INIT,
   FETCH_DATA_SUCCESS,
   FETCH_DATA_FAILURE,
   RESET_USER_DATA,
-  SHOW_EMAIL_DIALOG,
-  CHANGE_EMAIL,
 } from '../utils/constants'
 
 const getUser = `query GetUser($id: ID!) {
@@ -62,10 +74,6 @@ const profilePageReducer = (state, action) => {
       return { ...state, isLoading: false, isError: true }
     case RESET_USER_DATA:
       return state
-    case SHOW_EMAIL_DIALOG:
-      return { ...state, emailDialog: action.payload.emailDialog }
-    case CHANGE_EMAIL:
-      return { ...state, email: action.payload.email }
     default:
       throw new Error()
   }
@@ -75,8 +83,6 @@ const ProfilePage = ({ user, userAttributes }) => {
   const initialState = {
     isLoading: true,
     isError: false,
-    emailDialog: false,
-    email: userAttributes.email,
     orders: [],
     columns: [
       { prop: 'name', width: '150' },
@@ -102,12 +108,7 @@ const ProfilePage = ({ user, userAttributes }) => {
             case 'Email':
               return (
                 <Button
-                  onClick={() =>
-                    dispatch({
-                      type: SHOW_EMAIL_DIALOG,
-                      payload: { emailDialog: true },
-                    })
-                  }
+                  onClick={() => handleChange({ emailDialog: true })}
                   type="info"
                   size="small"
                 >
@@ -127,7 +128,14 @@ const ProfilePage = ({ user, userAttributes }) => {
       },
     ],
   }
+  const initialValues = {
+    emailDialog: false,
+    email: userAttributes.email,
+    verificationForm: false,
+    verificationCode: '',
+  }
   const [state, dispatch] = useReducer(profilePageReducer, initialState)
+  const { values, handleChange, handleSubmit } = useForm(initialValues)
 
   useEffect(() => {
     let isMounted = true
@@ -157,9 +165,59 @@ const ProfilePage = ({ user, userAttributes }) => {
     }
   }, [userAttributes.sub])
 
-  const handleUpdateEmail = () => {}
+  const handleUpdateEmail = async event => {
+    try {
+      const updatedAttributes = {
+        email: values.email,
+      }
+      const result = Auth.updateUserAttributes(user, updatedAttributes)
+      if (result === 'SUCCESS') {
+        sendVerificationCode('email')
+      }
+    } catch (error) {
+      console.error(error)
+      Notification.error({
+        title: 'Error',
+        message: `${error.message} || 'Error updating attribute'}`,
+      })
+    }
+  }
 
-  const { email, emailDialog, orders, columns, isLoading, isError } = state
+  const sendVerificationCode = async attribute => {
+    await Auth.verifyCurrentUserAttribute(attribute)
+    handleChange({ verificationForm: true })
+    Message({
+      type: 'info',
+      customClass: 'message',
+      message: `Verification code sent to ${values.email}`,
+    })
+  }
+
+  const handleVerifyEmail = async attribute => {
+    try {
+      const result = await Auth.verifyCurrentUserAttributeSubmit(
+        attribute,
+        values.verificationCode
+      )
+      Notification({
+        title: 'Success',
+        message: 'Email successfully verified',
+        type: `${result.toLowerCase()}`,
+        duration: 3000,
+        onClose: () => {
+          history.push('/')
+        },
+      })
+    } catch (error) {
+      console.error(error)
+      Notification.error({
+        title: 'Error',
+        message: `${error.message || 'Error updating email'}`,
+      })
+    }
+  }
+
+  const { orders, columns, isLoading, isError } = state
 
   if (isLoading) return <Loading fullscreen={true} />
   if (isError) return <Error />
@@ -237,40 +295,46 @@ const ProfilePage = ({ user, userAttributes }) => {
           size="large"
           customClass="dialog"
           title="Edit Email"
-          visible={emailDialog}
-          onCancel={() =>
-            dispatch({
-              type: SHOW_EMAIL_DIALOG,
-              payload: { emailDialog: false },
-            })
-          }
+          visible={values.emailDialog}
+          onCancel={() => handleChange({ emailDialog: false })}
         >
           <Dialog.Body>
             <Form labelPosition="top">
               <Form.Item label="Email">
                 <Input
-                  value={email}
-                  onChange={email =>
-                    dispatch({ type: CHANGE_EMAIL, payload: email })
-                  }
+                  value={values.email}
+                  onChange={email => handleChange({ email })}
                 />
               </Form.Item>
+              {values.verificationForm && (
+                <Form.Item label="Enter Verification Code" labelWidth="120">
+                  <Input
+                    value={values.verificationCode}
+                    onChange={verificationCode =>
+                      handleChange({ verificationCode })
+                    }
+                  />
+                </Form.Item>
+              )}
             </Form>
           </Dialog.Body>
           <Dialog.Footer>
-            <Button
-              onClick={() =>
-                dispatch({
-                  type: SHOW_EMAIL_DIALOG,
-                  payload: { emailDialog: false },
-                })
-              }
-            >
+            <Button onClick={() => handleChange({ emailDialog: false })}>
               Cancel
             </Button>
-            <Button type="primary" onClick={handleUpdateEmail}>
-              Save
-            </Button>
+            {!values.verificationForm && (
+              <Button
+                type="primary"
+                onClick={event => handleSubmit(event, handleUpdateEmail)}
+              >
+                Save
+              </Button>
+            )}
+            {values.verificationForm && (
+              <Button type="primary" onClick={() => handleVerifyEmail('email')}>
+                Submit
+              </Button>
+            )}
           </Dialog.Footer>
         </Dialog>
       </>
