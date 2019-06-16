@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect } from 'react'
 import { API, graphqlOperation } from 'aws-amplify'
 // prettier-ignore
-import { Button, Tag, Tabs, Table, Icon, Card, Loading } from 'element-react'
+import { Input, Form, Dialog, Button, Tag, Tabs, Table, Icon, Card, Loading } from 'element-react'
 import Error from '../components/Error'
 import { convertCentsToDollars } from '../utils'
 import {
@@ -9,6 +9,8 @@ import {
   FETCH_DATA_SUCCESS,
   FETCH_DATA_FAILURE,
   RESET_USER_DATA,
+  SHOW_EMAIL_DIALOG,
+  CHANGE_EMAIL,
 } from '../utils/constants'
 
 const getUser = `query GetUser($id: ID!) {
@@ -60,6 +62,10 @@ const profilePageReducer = (state, action) => {
       return { ...state, isLoading: false, isError: true }
     case RESET_USER_DATA:
       return state
+    case SHOW_EMAIL_DIALOG:
+      return { ...state, emailDialog: action.payload.emailDialog }
+    case CHANGE_EMAIL:
+      return { ...state, email: action.payload.email }
     default:
       throw new Error()
   }
@@ -69,6 +75,8 @@ const ProfilePage = ({ user, userAttributes }) => {
   const initialState = {
     isLoading: true,
     isError: false,
+    emailDialog: false,
+    email: userAttributes.email,
     orders: [],
     columns: [
       { prop: 'name', width: '150' },
@@ -93,7 +101,16 @@ const ProfilePage = ({ user, userAttributes }) => {
           switch (row.name) {
             case 'Email':
               return (
-                <Button type="info" size="small">
+                <Button
+                  onClick={() =>
+                    dispatch({
+                      type: SHOW_EMAIL_DIALOG,
+                      payload: { emailDialog: true },
+                    })
+                  }
+                  type="info"
+                  size="small"
+                >
                   Edit
                 </Button>
               )
@@ -140,7 +157,9 @@ const ProfilePage = ({ user, userAttributes }) => {
     }
   }, [userAttributes.sub])
 
-  const { orders, columns, isLoading, isError } = state
+  const handleUpdateEmail = () => {}
+
+  const { email, emailDialog, orders, columns, isLoading, isError } = state
 
   if (isLoading) return <Loading fullscreen={true} />
   if (isError) return <Error />
@@ -199,9 +218,9 @@ const ProfilePage = ({ user, userAttributes }) => {
                         <div className="ml-2">
                           <p>{order.shippingAddress.address_line1}</p>
                           <p>
-                            {order.shippingAddress.city},{' '}
-                            {order.shippingAddress.state},{' '}
-                            {order.shippingAddress.country}{' '}
+                            {order.shippingAddress.city},
+                            {order.shippingAddress.state},
+                            {order.shippingAddress.country}
                             {order.shippingAddress.address_zip}
                           </p>
                         </div>
@@ -213,6 +232,47 @@ const ProfilePage = ({ user, userAttributes }) => {
             ))}
           </Tabs.Pane>
         </Tabs>
+        {/* Email Dialog */}
+        <Dialog
+          size="large"
+          customClass="dialog"
+          title="Edit Email"
+          visible={emailDialog}
+          onCancel={() =>
+            dispatch({
+              type: SHOW_EMAIL_DIALOG,
+              payload: { emailDialog: false },
+            })
+          }
+        >
+          <Dialog.Body>
+            <Form labelPosition="top">
+              <Form.Item label="Email">
+                <Input
+                  value={email}
+                  onChange={email =>
+                    dispatch({ type: CHANGE_EMAIL, payload: email })
+                  }
+                />
+              </Form.Item>
+            </Form>
+          </Dialog.Body>
+          <Dialog.Footer>
+            <Button
+              onClick={() =>
+                dispatch({
+                  type: SHOW_EMAIL_DIALOG,
+                  payload: { emailDialog: false },
+                })
+              }
+            >
+              Cancel
+            </Button>
+            <Button type="primary" onClick={handleUpdateEmail}>
+              Save
+            </Button>
+          </Dialog.Footer>
+        </Dialog>
       </>
     )
   )
