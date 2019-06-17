@@ -165,12 +165,22 @@ const ProfilePage = ({ user, userAttributes }) => {
     }
   }, [userAttributes.sub])
 
+  const sendVerificationCode = async attribute => {
+    await Auth.verifyCurrentUserAttribute(attribute)
+    Message({
+      type: 'info',
+      customClass: 'message',
+      message: `Verification code sent to ${values.email}`,
+    })
+  }
+
   const handleUpdateEmail = async event => {
     try {
+      handleChange({ verificationForm: true })
       const updatedAttributes = {
         email: values.email,
       }
-      const result = Auth.updateUserAttributes(user, updatedAttributes)
+      const result = await Auth.updateUserAttributes(user, updatedAttributes)
       if (result === 'SUCCESS') {
         sendVerificationCode('email')
       }
@@ -181,16 +191,6 @@ const ProfilePage = ({ user, userAttributes }) => {
         message: `${error.message} || 'Error updating attribute'}`,
       })
     }
-  }
-
-  const sendVerificationCode = async attribute => {
-    await Auth.verifyCurrentUserAttribute(attribute)
-    handleChange({ verificationForm: true })
-    Message({
-      type: 'info',
-      customClass: 'message',
-      message: `Verification code sent to ${values.email}`,
-    })
   }
 
   const handleVerifyEmail = async attribute => {
@@ -323,10 +323,7 @@ const ProfilePage = ({ user, userAttributes }) => {
               Cancel
             </Button>
             {!values.verificationForm && (
-              <Button
-                type="primary"
-                onClick={event => handleSubmit(event, handleUpdateEmail)}
-              >
+              <Button type="primary" onClick={() => handleUpdateEmail()}>
                 Save
               </Button>
             )}
