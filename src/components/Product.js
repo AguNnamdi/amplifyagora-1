@@ -29,7 +29,7 @@ const Product = ({ product }) => {
   const { userAttributes } = useContext(UserContext)
   const isProductOwner = userAttributes && userAttributes.sub === product.owner
 
-  const handleDeleteProduct = async event => {
+  const handleDeleteProduct = async () => {
     try {
       const input = {
         id: product.id,
@@ -45,7 +45,7 @@ const Product = ({ product }) => {
     }
   }
 
-  const handleUpdateProduct = async event => {
+  const handleUpdateProduct = async () => {
     try {
       const input = {
         id: product.id,

@@ -174,7 +174,7 @@ const ProfilePage = ({ user, userAttributes }) => {
     })
   }
 
-  const handleUpdateEmail = async event => {
+  const handleUpdateEmail = async () => {
     try {
       handleChange({ verificationForm: true })
       const updatedAttributes = {
@@ -205,7 +205,7 @@ const ProfilePage = ({ user, userAttributes }) => {
         type: `${result.toLowerCase()}`,
         duration: 3000,
         onClose: () => {
-          history.push('/')
+          history.push('/profile')
         },
       })
     } catch (error) {
@@ -328,7 +328,12 @@ const ProfilePage = ({ user, userAttributes }) => {
               </Button>
             )}
             {values.verificationForm && (
-              <Button type="primary" onClick={() => handleVerifyEmail('email')}>
+              <Button
+                type="primary"
+                onClick={event =>
+                  handleSubmit(event, () => handleVerifyEmail('email'))
+                }
+              >
                 Submit
               </Button>
             )}
