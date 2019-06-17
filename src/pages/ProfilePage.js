@@ -165,25 +165,18 @@ const ProfilePage = ({ user, userAttributes }) => {
     }
   }, [userAttributes.sub])
 
-  const sendVerificationCode = async attribute => {
-    await Auth.verifyCurrentUserAttribute(attribute)
-    Message({
-      type: 'info',
-      customClass: 'message',
-      message: `Verification code sent to ${values.email}`,
-    })
-  }
-
   const handleUpdateEmail = async () => {
     try {
       handleChange({ verificationForm: true })
       const updatedAttributes = {
         email: values.email,
       }
-      const result = await Auth.updateUserAttributes(user, updatedAttributes)
-      if (result === 'SUCCESS') {
-        sendVerificationCode('email')
-      }
+      await Auth.updateUserAttributes(user, updatedAttributes)
+      Message({
+        type: 'info',
+        customClass: 'message',
+        message: `Verification code sent to ${values.email}`,
+      })
     } catch (error) {
       console.error(error)
       Notification.error({
