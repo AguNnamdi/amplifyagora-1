@@ -46,6 +46,7 @@ const App = () => {
                 <MarketPage
                   {...props}
                   user={user}
+                  userAttributes={userAttributes}
                   marketId={props.match.params.marketId}
                 />
               )}

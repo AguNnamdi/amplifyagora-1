@@ -73,12 +73,13 @@ const fetchMarketReducer = (state, action) => {
   }
 }
 
-const useFetchMarketData = ({ marketId, user }) => {
+const useFetchMarketData = ({ user, userAttributes, marketId }) => {
   const initialState = {
     isLoading: true,
     isError: false,
     market: {},
     isMarketOwner: false,
+    isEmailVerified: userAttributes.email_verified,
   }
   const [state, dispatch] = useReducer(fetchMarketReducer, initialState)
 
@@ -97,7 +98,10 @@ const useFetchMarketData = ({ marketId, user }) => {
         if (isMounted) {
           dispatch({
             type: FETCH_DATA_SUCCESS,
-            payload: { market: result.data.getMarket, isMarketOwner },
+            payload: {
+              market: result.data.getMarket,
+              isMarketOwner,
+            },
           })
         }
       } catch (error) {
@@ -112,7 +116,7 @@ const useFetchMarketData = ({ marketId, user }) => {
     return () => {
       isMounted = false
     }
-  }, [marketId, user.username])
+  }, [marketId, user.username, userAttributes])
 
   useEffect(() => {
     const createProductListener = API.graphql(

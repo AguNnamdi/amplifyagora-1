@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import { API, graphqlOperation } from 'aws-amplify'
 import { S3Image } from 'aws-amplify-react'
+import { Link } from 'react-router-dom'
 import {
   Notification,
   Popover,
@@ -28,6 +29,7 @@ const Product = ({ product }) => {
   const { values, handleChange, handleSubmit } = useForm(initialValues)
   const { userAttributes } = useContext(UserContext)
   const isProductOwner = userAttributes && userAttributes.sub === product.owner
+  const isEmailVerified = userAttributes && userAttributes.email_verified
 
   const handleDeleteProduct = async () => {
     try {
@@ -90,8 +92,14 @@ const Product = ({ product }) => {
             <span className="mx-1">
               ${convertCentsToDollars(product.price)}
             </span>
-            {!isProductOwner && (
-              <PayButton product={product} userAttributes={userAttributes} />
+            {isEmailVerified ? (
+              !isProductOwner && (
+                <PayButton product={product} userAttributes={userAttributes} />
+              )
+            ) : (
+              <Link to="/profile" className="link">
+                Verify Email
+              </Link>
             )}
           </div>
         </div>

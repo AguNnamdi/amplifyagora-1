@@ -5,10 +5,16 @@ import useFetchMarketData from '../utils/useFetchMarketData'
 import NewProduct from '../components/NewProduct'
 import Product from '../components/Product'
 
-const MarketPage = ({ marketId, user }) => {
-  const { market, isMarketOwner, isLoading } = useFetchMarketData({
-    marketId,
+const MarketPage = ({ user, userAttributes, marketId }) => {
+  const {
+    market,
+    isMarketOwner,
+    isLoading,
+    isEmailVerified,
+  } = useFetchMarketData({
     user,
+    userAttributes,
+    marketId,
   })
 
   return isLoading ? (
@@ -43,7 +49,13 @@ const MarketPage = ({ marketId, user }) => {
             }
             name="1"
           >
-            <NewProduct marketId={marketId} />
+            {isEmailVerified ? (
+              <NewProduct marketId={marketId} />
+            ) : (
+              <Link to="/profile" className="header">
+                Verify Your Email Before Adding Products
+              </Link>
+            )}
           </Tabs.Pane>
         )}
 
