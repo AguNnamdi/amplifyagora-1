@@ -17,7 +17,7 @@ import {
   MessageBox,
 } from 'element-react'
 import Error from '../components/Error'
-import { convertCentsToDollars } from '../utils'
+import { convertCentsToDollars, formatOrderDate } from '../utils'
 import useForm from '../utils/useForm'
 import {
   FETCH_DATA_INIT,
@@ -317,17 +317,17 @@ const ProfilePage = ({ user, userAttributes }) => {
                     <p>Order Id: {order.id}</p>
                     <p>Product Description: {order.product.description}</p>
                     <p>Price: ${convertCentsToDollars(order.product.price)}</p>
-                    <p>Purchased on {order.createdAt}</p>
+                    <p>Purchased on {formatOrderDate(order.createdAt)}</p>
                     {order.shippingAddress && (
                       <>
                         Shipping Address
                         <div className="ml-2">
                           <p>{order.shippingAddress.address_line1}</p>
                           <p>
-                            {order.shippingAddress.city},
-                            {order.shippingAddress.state},
+                            {order.shippingAddress.address_zip}{' '}
+                            {order.shippingAddress.city},{' '}
+                            {order.shippingAddress.state},{' '}
                             {order.shippingAddress.country}
-                            {order.shippingAddress.address_zip}
                           </p>
                         </div>
                       </>

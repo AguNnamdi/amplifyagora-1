@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { Loading, Tabs, Icon } from 'element-react'
 import useFetchMarketData from '../utils/useFetchMarketData'
+import { formatProductDate } from '../utils'
 import NewProduct from '../components/NewProduct'
 import Product from '../components/Product'
 
@@ -33,7 +34,7 @@ const MarketPage = ({ user, userAttributes, marketId }) => {
       <div className="items-center pt-2">
         <span style={{ color: 'var(--lightSquidInk)', paddingBottom: '1em' }}>
           <Icon name="date" className="icon" />
-          {market.createdAt}
+          {formatProductDate(market.createdAt)}
         </span>
       </div>
 
