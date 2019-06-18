@@ -1,7 +1,6 @@
 import React, { useReducer, useEffect } from 'react'
 import { Auth, API, graphqlOperation } from 'aws-amplify'
 import { updateUser } from '../graphql/mutations'
-import { history } from '../App'
 import {
   Input,
   Form,
@@ -15,6 +14,7 @@ import {
   Loading,
   Notification,
   Message,
+  MessageBox,
 } from 'element-react'
 import Error from '../components/Error'
 import { convertCentsToDollars } from '../utils'
@@ -118,7 +118,11 @@ const ProfilePage = ({ user, userAttributes }) => {
               )
             case 'Delete Profile':
               return (
-                <Button type="danger" size="small">
+                <Button
+                  type="danger"
+                  size="small"
+                  onClick={handleDeleteProfile}
+                >
                   Delete
                 </Button>
               )
@@ -165,6 +169,42 @@ const ProfilePage = ({ user, userAttributes }) => {
       isMounted = false
     }
   }, [userAttributes.sub])
+
+  const handleDeleteProfile = () => {
+    MessageBox.confirm(
+      'This will permanently delete your account! Continue?',
+      'Attention!',
+      {
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }
+    )
+      .then(async () => {
+        try {
+          await user.deleteUser(() =>
+            Notification({
+              title: 'Success',
+              message: 'Profile successfully deleted',
+              type: 'success',
+              duration: 1000,
+              onClose: () => {
+                window.location = '/'
+                window.location.reload()
+              },
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
+      })
+      .catch(() => {
+        Message({
+          type: 'info',
+          message: 'Delete Profile cancelled',
+        })
+      })
+  }
 
   const handleUpdateEmail = async () => {
     try {
@@ -213,7 +253,7 @@ const ProfilePage = ({ user, userAttributes }) => {
         type: `${result.toLowerCase()}`,
         duration: 3000,
         onClose: () => {
-          history.push('/profile')
+          window.locaticon.reload()
         },
       })
     } catch (error) {
