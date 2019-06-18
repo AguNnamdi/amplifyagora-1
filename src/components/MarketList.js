@@ -25,7 +25,10 @@ const MarketList = ({ searchResults, searchTerm }) => {
       onSubscriptionMsg={onNewMarket}
     >
       {({ data, loading, errors }) => {
-        if (errors.length > 0) return <Error errors={errors} />
+        if (errors && errors.length > 0) {
+          return <Error errors={errors || 'Something went wrong'} />
+        }
+
         if (loading || !data.listMarkets) return <Loading fullscreen={true} />
         const markets =
           searchResults.length > 0 ? searchResults : data.listMarkets.items
