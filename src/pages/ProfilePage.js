@@ -1,5 +1,6 @@
 import React, { useReducer, useEffect } from 'react'
 import { Auth, API, graphqlOperation } from 'aws-amplify'
+import { updateUser } from '../graphql/mutations'
 import { history } from '../App'
 import {
   Input,
@@ -187,11 +188,25 @@ const ProfilePage = ({ user, userAttributes }) => {
   }
 
   const handleVerifyEmail = async attribute => {
+    // verify code against Amazon Cognito User
     try {
       const result = await Auth.verifyCurrentUserAttributeSubmit(
         attribute,
         values.verificationCode
       )
+      // update user email in Amazon Dynamo DB
+      if (result === 'SUCCESS') {
+        try {
+          const input = { id: userAttributes.sub, email: values.email }
+          await API.graphql(graphqlOperation(updateUser, { input }))
+        } catch (error) {
+          console.error(error)
+          Notification.error({
+            title: 'Error',
+            message: `${error.message || 'Error updating email'}`,
+          })
+        }
+      }
       Notification({
         title: 'Success',
         message: 'Email successfully verified',
